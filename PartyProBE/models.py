@@ -32,8 +32,8 @@ class Catering(models.Model):
     date = models.DateField()
     number_of_guest = models.CharField(max_length=50)
     other = models.CharField(max_length=10)
-    rsvp_id = models.ForeignKey(GuestRSVP, on_delete=models.SET_NULL, null=True, blank=True)
-    user_id = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True, blank=True)
+    rsvp_id = models.ForeignKey('GuestRSVP', on_delete=models.SET_NULL, null=True, blank=True)
+    user_id = models.ForeignKey('Users', on_delete=models.SET_NULL, null=True, blank=True)
     catering_id = models.AutoField(primary_key=True)
     # event_id = models.ForeignKey('Event', on_delete=models.SET_NULL, null=True, blank=True)
 
