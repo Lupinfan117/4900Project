@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from .models import Users, GuestRSVP, Testimonials, Admin, Event
+from .models import Users, GuestRSVP, Testimonials, Admin, Event, Catering, FoodItem
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -32,6 +32,18 @@ class AdminSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
+        fields = '__all__'
+
+
+class CateringSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Catering
+        fields = '__all__'
+
+
+class FoodItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodItem
         fields = '__all__'
 
 # class RegisterSerializer(serializers.ModelSerializer):

@@ -6,6 +6,9 @@ from PartyProBE import views
 
 urlpatterns = [
     path('', views.guest_list),
+    path('food', views.food_list),
+    path('catering', views.catering_list),
+    path('event', views.event_list)
     # path('api/customers/', views.customer_list),
     # path('api/mycustomers/', views.my_customer_list),
     # path('api/customers/<int:pk>', views.getCustomer),

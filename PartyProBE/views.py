@@ -2,11 +2,11 @@ from rest_framework import status, generics
 from rest_framework.decorators import api_view
 from .serializers import *
 from rest_framework.response import Response
-from .models import GuestRSVP
+from .models import GuestRSVP, FoodItem, Catering
 from rest_framework.permissions import AllowAny
 
-#@csrf_exempt
 
+# @csrf_exempt
 
 
 @api_view(['GET', 'POST'])
@@ -23,6 +23,7 @@ def guest_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def guest_detail(request, rsvp_id):
@@ -48,10 +49,124 @@ def guest_detail(request, rsvp_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET', 'POST'])
+def food_list(request):
+    # Retrieve or update the food list.
+    if request.method == 'GET':
+        food_list = FoodItem.objects.all()
+        serializer = FoodItemSerializer(food_list, many=True)
+        return Response({'data': serializer.data})
+
+    elif request.method == 'POST':
+        serializer = FoodItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET', 'PUT', 'DELETE'])
+def food_detail(request, rsvp_id):
+    # Retrieve, update, or delete food instance.
+    try:
+        food = FoodItem.objects.get(rsvp_id=rsvp_id)
+    except FoodItem.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = FoodItemSerializer(food)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = FoodItemSerializer(food, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        food.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET', 'POST'])
+def catering_list(request):
+    # Retrieve or update the food list.
+    if request.method == 'GET':
+        catering_list = Catering.objects.all()
+        serializer = CateringSerializer(catering_list, many=True)
+        return Response({'data': serializer.data})
+
+    elif request.method == 'POST':
+        serializer = CateringSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def Catering_detail(request, rsvp_id):
+    # Retrieve, update, or delete food instance.
+    try:
+        Catering_detail = Catering.objects.get(rsvp_id=rsvp_id)
+    except Catering.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = CateringSerializer(Catering_detail)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = CateringSerializer(Catering_detail, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        Catering_detail.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET', 'POST'])
+def event_list(request):
+    # Retrieve or update the food list.
+    if request.method == 'GET':
+        event_list = Event.objects.all()
+        serializer = CateringSerializer(event_list, many=True)
+        return Response({'data': serializer.data})
+
+    elif request.method == 'POST':
+        serializer = EventSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def Event_detail(request, rsvp_id):
+    # Retrieve, update, or delete food instance.
+    try:
+        Event_detail = Event.objects.get(rsvp_id=rsvp_id)
+    except Catering.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = EventSerializer(Event_detail)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = EventSerializer(Event_detail, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        Event_detail.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # @api_view(['GET', 'POST'])
 # def guest_list(request):
@@ -216,4 +331,3 @@ def guest_detail(request, rsvp_id):
 #     if request.method == 'GET':
 #         serializer = UserSerializer(user, context={'request': request})
 #         return Response(serializer.data)
-
