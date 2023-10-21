@@ -1,10 +1,11 @@
 from django.contrib import admin
-from .models import FoodItem, GuestRSVP, Catering, Event, User
+from .models import FoodItem, GuestRSVP, Catering, Event, Users
+from django.contrib.auth.admin import UserAdmin
 
 
 # class UsersAdmin(admin.ModelAdmin):
-#     list_display = ('user_id', 'passwords', 'rsvp_id')
-#     list_filter = ('user_id', 'rsvp_id')
+#     list_display = ('user_id', 'passwords')
+#     list_filter = ('user_id',)
 #     search_fields = ('user_id', 'rsvp_id')
 #     ordering = ['user_id']
 
@@ -23,9 +24,10 @@ class FoodItemAdmin(admin.ModelAdmin):
 
 
 class CateringAdmin(admin.ModelAdmin):
-    list_display = ('event', 'date', 'number_of_guest', 'other', 'rsvp_id')
-    list_filter = ('event', 'date', 'number_of_guest', 'other')
-    search_fields = ('event', 'date', 'number_of_guest', 'other')
+    list_display = ('event', 'date', 'number_of_guest', 'other', 'rsvp_id', 'user_id')
+    list_filter = ('event', 'date', 'number_of_guest', 'other', 'user_id')
+    search_fields = ('event', 'date', 'number_of_guest', 'other', 'user_id')
+
 
 # class EventAdmin(admin.ModelAdmin):
 #     list_display = ('event_id', 'user_id', 'rsvp_id')
@@ -39,8 +41,7 @@ class CateringAdmin(admin.ModelAdmin):
 #     search_fields = ('customer', 'symbol', 'name')
 #     ordering = ['customer']
 
-
-# admin.site.register(Users, UsersAdmin)
+admin.site.register(Users, UserAdmin)
 admin.site.register(GuestRSVP, GuestRSVPAdmin)
 admin.site.register(FoodItem, FoodItemAdmin)
 admin.site.register(Catering, CateringAdmin)

@@ -2,7 +2,7 @@ from rest_framework import status, generics
 from rest_framework.decorators import api_view
 from .serializers import *
 from rest_framework.response import Response
-from .models import GuestRSVP, FoodItem, Catering
+from .models import GuestRSVP, FoodItem, Catering, Users
 from rest_framework.permissions import AllowAny
 
 
@@ -167,6 +167,53 @@ def Event_detail(request, rsvp_id):
     elif request.method == 'DELETE':
         Event_detail.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET', 'POST'])
+def users_list(request):
+    # Retrieve or update the guest list.
+    if request.method == 'GET':
+        users_list = Users.objects.all()
+        serializer = UsersSerializer(users_list, many=True)
+        return Response({'data': serializer.data})
+
+    elif request.method == 'POST':
+        serializer = UsersSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def user_detail(request, rsvp_id):
+    # Retrieve, update, or delete a guest RSVP instance.
+    try:
+        guest = Users.objects.get(rsvp_id=rsvp_id)
+    except Users.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = UsersSerializer(guest)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = UsersSerializer(guest, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        guest.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class RegisterView(generics.CreateAPIView):
+    #Register a new user - requester need not be authorized
+    queryset = Users.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+
 
 # @api_view(['GET', 'POST'])
 # def guest_list(request):
