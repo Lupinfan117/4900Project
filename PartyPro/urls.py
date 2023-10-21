@@ -12,7 +12,7 @@ urlpatterns = [
     # allow login/logout for non-admin from local server page    path('api/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    # path('register/', views.RegisterView.as_view(), name='auth_register'),
+    path('register/', views.RegisterView.as_view(), name='auth_register'),
     # path('api/getUser/', views.getUser),
     path('', include('PartyProBE.urls')),
     # re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),  # handle media when DEBUG is False
