@@ -144,7 +144,7 @@ CORS_ORIGIN_WHITELIST = (
     'https://127.0.0.1:8080'
 )
 
-AUTH_USER_MODEL = 'PartyPro.Users'
+AUTH_USER_MODEL = 'Management.Users'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
