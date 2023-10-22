@@ -2,7 +2,6 @@ from django.contrib import admin
 from .models import FoodItem, GuestRSVP, Catering, Event, Users
 from django.contrib.auth.admin import UserAdmin
 
-
 # class UsersAdmin(admin.ModelAdmin):
 #     list_display = ('user_id', 'passwords')
 #     list_filter = ('user_id',)
@@ -11,10 +10,12 @@ from django.contrib.auth.admin import UserAdmin
 
 
 class GuestRSVPAdmin(admin.ModelAdmin):
-    list_display = ('rsvp_id', 'event_id', 'email', 'first_name', 'last_name', 'food_choice')
-    list_filter = ('event_id', 'food_choice')
-    search_fields = ('event_id', 'first_name', 'last_name')
+    list_display = ('rsvp_id', 'email', 'first_name', 'last_name', 'food_choice')
+    list_filter = ('food_choice',)
+    search_fields = ('first_name', 'last_name')
     ordering = ['event_id']
+
+
 
 
 class FoodItemAdmin(admin.ModelAdmin):

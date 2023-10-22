@@ -14,8 +14,9 @@ class GuestRSVP(models.Model):
     email = models.EmailField()
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    food_choice = models.CharField(max_length=50)
-
+    food_choice = models.ForeignKey('FoodItem', on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.food_choice)
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
