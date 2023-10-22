@@ -2,7 +2,7 @@
 URL configuration for investments project - portfolio app.
 """
 from django.urls import path
-from PartyProBE import views
+from Management import views
 
 urlpatterns = [
     path('', views.guest_list),

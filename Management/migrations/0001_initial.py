@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField(max_length=50)),
                 ('last_name', models.CharField(max_length=50)),
                 ('food_choice', models.CharField(max_length=50)),
-                ('event_id', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='PartyProBE.event')),
+                ('event_id', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='Management.event')),
             ],
             options={
                 'unique_together': {('event_id', 'email')},
@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('updated_date', models.DateTimeField(auto_now=True)),
                 ('testimonials_id', models.AutoField(primary_key=True, serialize=False)),
-                ('rsvp_id', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='PartyProBE.guestrsvp')),
+                ('rsvp_id', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='Management.guestrsvp')),
                 ('user_id', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -92,13 +92,13 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('food', models.CharField(max_length=200)),
                 ('dessert', models.CharField(max_length=50)),
-                ('catering', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='food_items', to='PartyProBE.catering')),
+                ('catering', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='food_items', to='Management.catering')),
             ],
         ),
         migrations.AddField(
             model_name='event',
             name='rsvp_id',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='PartyProBE.guestrsvp'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='Management.guestrsvp'),
         ),
         migrations.AddField(
             model_name='event',
@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='catering',
             name='rsvp_id',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='PartyProBE.guestrsvp'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='Management.guestrsvp'),
         ),
         migrations.AddField(
             model_name='catering',
@@ -119,8 +119,8 @@ class Migration(migrations.Migration):
             name='Admin',
             fields=[
                 ('admin_id', models.CharField(max_length=30, primary_key=True, serialize=False)),
-                ('rsvp_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='PartyProBE.guestrsvp')),
-                ('testimonials_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='PartyProBE.testimonials')),
+                ('rsvp_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Management.guestrsvp')),
+                ('testimonials_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Management.testimonials')),
                 ('user_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

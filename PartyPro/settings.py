@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'PartyProBE.apps.PartyprobeConfig',
+    'Management.apps.PartyprobeConfig',
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
@@ -144,7 +144,7 @@ CORS_ORIGIN_WHITELIST = (
     'https://127.0.0.1:8080'
 )
 
-AUTH_USER_MODEL = 'PartyProBE.Users'
+AUTH_USER_MODEL = 'PartyPro.Users'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
