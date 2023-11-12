@@ -8,6 +8,19 @@ class Users(AbstractUser):
         return str(self.id)
 
 
+class Event(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(default='')
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='events_organizer')
+    rsvp = models.ManyToManyField(Users, related_name='events_attending')
+    event_date = models.DateTimeField(default=timezone.now)
+    number_of_guests = models.PositiveIntegerField()
+    catering = models.ForeignKey('Catering', on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.name
+
+
 class GuestRSVP(models.Model):
     rsvp_id = models.AutoField(primary_key=True)
     event_id = models.ForeignKey('Event', on_delete=models.SET_NULL, null=True, blank=True)
@@ -25,14 +38,12 @@ class GuestRSVP(models.Model):
 
 
 class Catering(models.Model):
-    event = models.CharField(max_length=50)
-    date = models.DateField()
-    number_of_guest = models.CharField(max_length=50)
-    other = models.CharField(max_length=10)
-    rsvp_id = models.ForeignKey('GuestRSVP', on_delete=models.SET_NULL, null=True, blank=True)
-    user_id = models.ForeignKey(Users, on_delete=models.SET_NULL, null=True, blank=True)
-    catering_id = models.AutoField(primary_key=True)
-    # event_id = models.ForeignKey('Event', on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField(default='')
+    foodItems = models.ManyToManyField('FoodItem', related_name='caterings')
+
+    def __str__(self):
+        return self.name
 
     def created(self):
         self.created_date = timezone.now()
@@ -41,18 +52,23 @@ class Catering(models.Model):
     def updated(self):
         self.updated_date = timezone.now()
         self.save()
-
-    def __str__(self):
-        return str(self.pk)
-
+    
 
 class FoodItem(models.Model):
-    catering = models.ForeignKey(Catering, on_delete=models.CASCADE, related_name='food_items', blank=True, null=True)
-    food = models.CharField(max_length=200)
-    dessert = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
 
     def __str__(self):
-        return self.food
+        return self.name
+
+
+# class FoodItem(models.Model):
+#     catering = models.ForeignKey(Catering, on_delete=models.CASCADE, related_name='food_items', blank=True, null=True)
+#     food = models.CharField(max_length=200)
+#     dessert = models.CharField(max_length=50)
+
+#     def __str__(self):
+#         return self.food
 
 
 class Testimonials(models.Model):
@@ -87,10 +103,10 @@ class Admin(models.Model):
         return self.pk
 
 
-class Event(models.Model):
-    event_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey('Users', on_delete=models.CASCADE, null=True)
-    rsvp_id = models.ForeignKey('GuestRSVP', on_delete=models.CASCADE, null=True)
+# class Event(models.Model):
+#     event_id = models.AutoField(primary_key=True)
+#     user_id = models.ForeignKey('Users', on_delete=models.CASCADE, null=True)
+#     rsvp_id = models.ForeignKey('GuestRSVP', on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
-        return f'Event ID: {self.event_id}, User ID: {self.user_id_id}'
+#     def __str__(self):
+#         return f'Event ID: {self.event_id}, User ID: {self.user_id_id}'

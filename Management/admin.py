@@ -18,22 +18,22 @@ class GuestRSVPAdmin(admin.ModelAdmin):
 
 
 
-class FoodItemAdmin(admin.ModelAdmin):
-    list_display = ('food', 'dessert')
-    list_filter = ('food', 'dessert')
-    search_fields = ('food', 'dessert')
+class FoodAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    list_filter = ('name',)  # Make sure to use a tuple for single values
+    search_fields = ('name',)
 
 
 class CateringAdmin(admin.ModelAdmin):
-    list_display = ('event', 'date', 'number_of_guest', 'other', 'rsvp_id', 'user_id')
-    list_filter = ('event', 'date', 'number_of_guest', 'other', 'user_id')
-    search_fields = ('event', 'date', 'number_of_guest', 'other', 'user_id')
+    list_display = ('name', 'description')
+    list_filter = ('name',)  # Make sure to use a tuple for single values
+    search_fields = ('name',)
 
 
-# class EventAdmin(admin.ModelAdmin):
-#     list_display = ('event_id', 'user_id', 'rsvp_id')
-#     list_filter = ('user_id', 'rsvp_id')
-#     search_fields = ('user_id__user_id', 'rsvp_id__rsvp_id', 'user_id')
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user', 'event_date', 'number_of_guests', 'catering')
+    list_filter = ('user', 'event_date')
+    search_fields = ('event_name', 'user__username')
 
 
 # class StockList(admin.ModelAdmin):
@@ -43,9 +43,8 @@ class CateringAdmin(admin.ModelAdmin):
 #     ordering = ['customer']
 
 admin.site.register(Users, UserAdmin)
-admin.site.register(GuestRSVP, GuestRSVPAdmin)
-admin.site.register(FoodItem, FoodItemAdmin)
+# admin.site.register(GuestRSVP, GuestRSVPAdmin)
+admin.site.register(FoodItem, FoodAdmin)
 admin.site.register(Catering, CateringAdmin)
-# admin.site.register(Event, EventAdmin)
+admin.site.register(Event, EventAdmin)
 # admin.site.register(Testimonials, StockList)
-# admin.site.register(Event, UsersAdmin)

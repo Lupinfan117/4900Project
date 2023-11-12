@@ -7,8 +7,11 @@ from Management import views
 urlpatterns = [
     path('', views.guest_list),
     path('food', views.food_list),
+    path('food/<int:id>/', views.food_list),
     path('catering', views.catering_list),
-    path('event', views.event_list)
+    path('catering/<int:id>/', views.catering_detail),
+    path('event', views.event_list),
+    path('event/<int:id>/', views.event_list)
     # path('api/customers/', views.customer_list),
     # path('api/mycustomers/', views.my_customer_list),
     # path('api/customers/<int:pk>', views.getCustomer),

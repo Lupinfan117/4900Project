@@ -8,7 +8,12 @@ from rest_framework.validators import UniqueValidator
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = '__all__'
+        fields = ('id', 'username', 'email')
+
+    def to_internal_value(self, data):
+        if isinstance(data, int):
+            return Users.objects.get(id=data)
+        return super().to_internal_value(data)
 
 
 class GuestRSVPSerializer(serializers.ModelSerializer):
@@ -28,23 +33,47 @@ class AdminSerializer(serializers.ModelSerializer):
         model = Admin
         fields = '__all__'
 
-
-class EventSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Event
+class FoodItemSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = FoodItem
         fields = '__all__'
 
-
 class CateringSerializer(serializers.ModelSerializer):
+    foodItems = FoodItemSerializer(many=True, read_only=True)
+
     class Meta:
         model = Catering
         fields = '__all__'
 
+    def to_internal_value(self, data):
+        if isinstance(data, int):
+            return Catering.objects.get(id=data)
+        return super().to_internal_value(data)
 
-class FoodItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FoodItem
+class EventSerializer(serializers.ModelSerializer):
+#    rsvp = serializers.StringRelatedField(many=True)
+   rsvp = UsersSerializer(many=True)
+   catering = CateringSerializer()
+   user = UsersSerializer()
+   class Meta:
+        model = Event
         fields = '__all__'
+
+
+class CreateEventSerializer(serializers.ModelSerializer):
+   rsvp = serializers.PrimaryKeyRelatedField(many=True, queryset=Users.objects.all())
+   user = serializers.PrimaryKeyRelatedField(queryset=Users.objects.all())
+   catering = CateringSerializer()
+   class Meta:
+        model = Event
+        fields = '__all__'
+   
+
+
+
+
+
+
 
 
 class RegisterSerializer(serializers.ModelSerializer):
