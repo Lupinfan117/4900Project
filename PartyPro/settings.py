@@ -142,7 +142,8 @@ SIMPLE_JWT = {
 
 CORS_ORIGIN_WHITELIST = (
     'https://localhost:8080',
-    'https://127.0.0.1:8080'
+    'https://127.0.0.1:8080',
+    'https://frontend3-red.vercel.app/'
 )
 
 AUTH_USER_MODEL = 'Management.Users'
