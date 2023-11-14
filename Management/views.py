@@ -1,12 +1,16 @@
 from rest_framework import status, generics
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import *
 from rest_framework.response import Response
-from .models import GuestRSVP, FoodItem, Catering, Users
+from .models import GuestRSVP, FoodItem, Catering, Users,Invitation
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 # from django.contrib.auth import authenticate
 # from rest_framework.authtoken.models import Token
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+import json
 
 
 # @csrf_exempt
@@ -128,15 +132,33 @@ def catering_detail(request, id):
         Catering_detail.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+def add_image(request, id):
+    try:
+        event = Event.objects.get(pk=id)
+    except Event.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = EventImageSerializer(event, data={'image': request.data.get('image')}, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT', 'DELETE','POST'])
+# @parser_classes([MultiPartParser, FormParser])
 def event_list(request, id=None):
     if request.method == 'POST':
+        print(request.data)
         serializer = CreateEventSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            event = serializer.save()
+            create_invitations_for_event(event,instance=event, created=True)
+            s = EventSerializer(event)
+            return Response(s.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     if id is None:
         # Handle the case where id is not provided (e.g., list all events).
@@ -167,7 +189,41 @@ def event_list(request, id=None):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@receiver(post_save, sender=Event)
+def create_invitations_for_event(sender, instance, created, **kwargs):
+    if created:
+        rsvp_users = instance.rsvp.all()
+        for user in rsvp_users:
+            Invitation.objects.create(event=instance, user=user)
 
+
+@api_view(['GET'])
+def get_invitations_by_user(request):
+    invitations = Invitation.objects.filter(user=request.user)
+    serializer = InvitationWithDetailsSerializer(invitations, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_invitations_by_event(request, event_id):
+    invitations = Invitation.objects.filter(event=event_id)
+    serializer = InvitationWithDetailsSerializer(invitations, many=True)
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+def update_invitation_status(request, invitation_id):
+    try:
+        invitation = Invitation.objects.get(pk=invitation_id)
+    except Invitation.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # Assuming you have a field named 'invite_status' in your request data
+    serializer = InvitationSerializer(invitation, data={'invite_status': request.data.get('invite_status')}, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST'])
@@ -223,24 +279,7 @@ class UserView(APIView):
         return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-# class LoginView(generics.CreateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
 
-#     def create(self, request, *args, **kwargs):
-#         username = request.data.get('username')
-#         password = request.data.get('password')
-
-#         if username and password:
-#             user = authenticate(username=username, password=password)
-#             if user:
-#                 token, created = Token.objects.get_or_create(user=user)
-#                 return Response({
-#                     'token': token.key,
-#                     'user': UserSerializer(user).data,
-#                 })
-
-#         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 

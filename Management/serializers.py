@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from .models import Users, GuestRSVP, Testimonials, Admin, Event, Catering, FoodItem
+from .models import Users, GuestRSVP, Testimonials, Admin, Event, Catering, FoodItem,Invitation
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -8,7 +8,7 @@ from rest_framework.validators import UniqueValidator
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ('id', 'username', 'email')
+        fields = ('id', 'username', 'email','type')
 
     def to_internal_value(self, data):
         if isinstance(data, int):
@@ -46,9 +46,16 @@ class CateringSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_internal_value(self, data):
+        print("hello asghar", type(data))
         if isinstance(data, int):
             return Catering.objects.get(id=data)
+        elif isinstance(data, str):
+            return Catering.objects.get(id=int(data))
+        elif isinstance(data, list):
+            return Catering.objects.get(id=data[0])
         return super().to_internal_value(data)
+
+
 
 class EventSerializer(serializers.ModelSerializer):
 #    rsvp = serializers.StringRelatedField(many=True)
@@ -63,11 +70,33 @@ class EventSerializer(serializers.ModelSerializer):
 class CreateEventSerializer(serializers.ModelSerializer):
    rsvp = serializers.PrimaryKeyRelatedField(many=True, queryset=Users.objects.all())
    user = serializers.PrimaryKeyRelatedField(queryset=Users.objects.all())
-   catering = CateringSerializer()
+   catering = serializers.PrimaryKeyRelatedField(queryset=Catering.objects.all())
+#    image = serializers.ImageField()
    class Meta:
         model = Event
         fields = '__all__'
+
+class EventImageSerializer(serializers.ModelSerializer):
+   image = serializers.ImageField()
+   class Meta:
+        model = Event
+        fields = '__all__'
+
+class InvitationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invitation
+        fields = '__all__'
+
    
+
+
+class InvitationWithDetailsSerializer(serializers.ModelSerializer):
+    user = UsersSerializer()
+    event = EventSerializer()
+
+    class Meta:
+        model = Invitation
+        fields = '__all__'
 
 
 
@@ -87,10 +116,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Users
-        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name')
+        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name','type')
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
+            'type': {'required': True},
             'password': {'write_only': True, 'min_length': 6},
             'password2': {'write_only': True, 'min_length': 6}
         }
@@ -106,7 +136,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
+            last_name=validated_data['last_name'],
+            type=validated_data['type'],
         )
         users.set_password(validated_data['password'])
         users.save()

@@ -4,6 +4,14 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Users(AbstractUser):
+
+    USER_TYPES = (
+        ('Event Planner', 'Event Planner'),
+        ('Guest', 'Guest'),
+        # Add more user types as needed
+    )
+
+    type = models.CharField(max_length=20, choices=USER_TYPES, default='customer')
     def __str__(self):
         return str(self.id)
 
@@ -16,6 +24,7 @@ class Event(models.Model):
     event_date = models.DateTimeField(default=timezone.now)
     number_of_guests = models.PositiveIntegerField()
     catering = models.ForeignKey('Catering', on_delete=models.SET_NULL, null=True)
+    image = models.ImageField(upload_to='images/',null=True)
 
     def __str__(self):
         return self.name
@@ -60,6 +69,14 @@ class FoodItem(models.Model):
 
     def __str__(self):
         return self.name
+
+class Invitation(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    invite_status = models.CharField(max_length=255, default='Pending')  # You can adjust this based on your needs
+
+    def __str__(self):
+        return f"{self.user.username}"
 
 
 # class FoodItem(models.Model):
