@@ -12,6 +12,7 @@ class Users(AbstractUser):
     )
 
     type = models.CharField(max_length=20, choices=USER_TYPES, default='customer')
+    code = models.CharField(max_length=20, blank=True,null=True)
     def __str__(self):
         return str(self.id)
 

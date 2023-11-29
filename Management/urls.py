@@ -9,6 +9,8 @@ urlpatterns = [
     path('food', views.food_list),
     path('food/<int:id>/', views.food_list),
     path('catering', views.catering_list),
+    path('forget', views.forgetPass),
+    path('reset/<int:id>/', views.resetPass),
     path('catering/<int:id>/', views.catering_detail),
     path('event', views.event_list),
     path('all-events', views.all_events),

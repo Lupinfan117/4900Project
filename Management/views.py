@@ -1,5 +1,5 @@
 from rest_framework import status, generics
-from rest_framework.decorators import api_view, parser_classes
+from rest_framework.decorators import api_view, parser_classes,authentication_classes, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import *
 from rest_framework.response import Response
@@ -12,6 +12,9 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 import json
 from datetime import datetime
+import secrets
+from django.core.mail import EmailMultiAlternatives
+
 
 
 # @csrf_exempt
@@ -189,6 +192,68 @@ def invites(request, id):
                 for user in users:
                     Invitation.objects.create(event=event, user=user)
                 return Response('Invitations Sent Successfully')
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Event.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+def generate_random_code(length=8):
+    return secrets.token_hex(length // 2)[:length]
+
+
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def forgetPass(request):
+    if request.method == 'POST':
+        print(request.data)
+        try:
+            serializer = ForgetPassSerializer(data=request.data)
+            if serializer.is_valid():
+                email = serializer.validated_data['email']
+                user = Users.objects.get(email=email)
+                if user:
+                    code = generate_random_code()
+                    user.code = code
+                    user.save()
+
+                    subject = 'Reset Your Party Pro Password'
+                    message = ''
+                    from_email = 'partypro@zohomail.com' # add email address here
+                    recipient_list = [email]
+
+                    html_message = f'<div> Hi, Please Reset Your Password by clicking on the link below </div> <a href="http://localhost:5173/reset?uid={user.pk}&code={code}">Click Here</a>'
+
+                    email = EmailMultiAlternatives(subject, message, from_email, recipient_list)
+                    email.attach_alternative(html_message, "text/html")  # Attach the HTML content
+                    email.send()
+
+                    return Response('Email sent successfully')
+                    
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Event.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def resetPass(request,id):
+    if request.method == 'POST':
+        print(request.data)
+        try:
+            serializer = ResetPassSerializer(data=request.data)
+            if serializer.is_valid() and id is not None:
+                code = serializer.validated_data['code']
+                password = serializer.validated_data['password']
+                user = Users.objects.get(pk=id)
+                if user:
+                    if user.code == code:
+                        user.set_password(password)
+                        user.code = ''
+                        user.save()
+
+                    return Response('Password Reset successfully')
+                    
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Event.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)

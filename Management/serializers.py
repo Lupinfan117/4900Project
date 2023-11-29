@@ -16,6 +16,17 @@ class UsersSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
 
+class ForgetPassSerializer(serializers.ModelSerializer):
+   class Meta:
+        model = Users
+        fields = ['email']
+
+class ResetPassSerializer(serializers.ModelSerializer):
+   class Meta:
+        model = Users
+        fields = ['code','password']
+
+
 class GuestRSVPSerializer(serializers.ModelSerializer):
     class Meta:
         model = GuestRSVP
