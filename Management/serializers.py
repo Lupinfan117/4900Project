@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from .models import Users, GuestRSVP, Testimonials, Admin, Event, Catering, FoodItem,Invitation
+from .models import Users, GuestRSVP, Testimonials, Admin, Event, Catering, FoodItem,Invitation,Testimonial
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -14,6 +14,17 @@ class UsersSerializer(serializers.ModelSerializer):
         if isinstance(data, int):
             return Users.objects.get(id=data)
         return super().to_internal_value(data)
+
+
+class ForgetPassSerializer(serializers.ModelSerializer):
+   class Meta:
+        model = Users
+        fields = ['email']
+
+class ResetPassSerializer(serializers.ModelSerializer):
+   class Meta:
+        model = Users
+        fields = ['code','password']
 
 
 class GuestRSVPSerializer(serializers.ModelSerializer):
@@ -59,7 +70,7 @@ class CateringSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
 #    rsvp = serializers.StringRelatedField(many=True)
-   rsvp = UsersSerializer(many=True)
+#    rsvp = UsersSerializer(many=True)
    catering = CateringSerializer()
    user = UsersSerializer()
    class Meta:
@@ -68,13 +79,41 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class CreateEventSerializer(serializers.ModelSerializer):
-   rsvp = serializers.PrimaryKeyRelatedField(many=True, queryset=Users.objects.all())
+#    rsvp = serializers.PrimaryKeyRelatedField(many=True, queryset=Users.objects.all())
    user = serializers.PrimaryKeyRelatedField(queryset=Users.objects.all())
    catering = serializers.PrimaryKeyRelatedField(queryset=Catering.objects.all())
 #    image = serializers.ImageField()
    class Meta:
         model = Event
         fields = '__all__'
+
+
+class CreateTestimonialSerializer(serializers.ModelSerializer):
+   user = serializers.PrimaryKeyRelatedField(queryset=Users.objects.all())
+   event = serializers.PrimaryKeyRelatedField(queryset=Event.objects.all())
+   class Meta:
+        model = Testimonial
+        fields = '__all__'
+
+class ListTestimonialSerializer(serializers.ModelSerializer):
+   user = UsersSerializer()
+   class Meta:
+        model = Testimonial
+        fields = '__all__'
+
+
+
+class BookEventSerializer(serializers.ModelSerializer):
+   user = serializers.PrimaryKeyRelatedField(queryset=Users.objects.all())
+   class Meta:
+        model = Event
+        fields = ['user']
+
+class InviteEventSerializer(serializers.ModelSerializer):
+   users = serializers.PrimaryKeyRelatedField(many=True,queryset=Users.objects.all())
+   class Meta:
+        model = Event
+        fields = ['users']
 
 class EventImageSerializer(serializers.ModelSerializer):
    image = serializers.ImageField()

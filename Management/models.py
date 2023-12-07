@@ -12,6 +12,7 @@ class Users(AbstractUser):
     )
 
     type = models.CharField(max_length=20, choices=USER_TYPES, default='customer')
+    code = models.CharField(max_length=20, blank=True,null=True)
     def __str__(self):
         return str(self.id)
 
@@ -20,7 +21,7 @@ class Event(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(default='')
     user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='events_organizer')
-    rsvp = models.ManyToManyField(Users, related_name='events_attending')
+    # rsvp = models.ManyToManyField(Users, related_name='events_attending',blank=True,null=True)
     event_date = models.DateTimeField(default=timezone.now)
     number_of_guests = models.PositiveIntegerField()
     catering = models.ForeignKey('Catering', on_delete=models.SET_NULL, null=True)
@@ -79,13 +80,12 @@ class Invitation(models.Model):
         return f"{self.user.username}"
 
 
-# class FoodItem(models.Model):
-#     catering = models.ForeignKey(Catering, on_delete=models.CASCADE, related_name='food_items', blank=True, null=True)
-#     food = models.CharField(max_length=200)
-#     dessert = models.CharField(max_length=50)
 
-#     def __str__(self):
-#         return self.food
+class Testimonial(models.Model):
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Testimonials(models.Model):
