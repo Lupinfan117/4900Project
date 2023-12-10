@@ -6,3 +6,4 @@ djangorestframework-simplejwt==5.2.2
 PyJWT==2.8.0
 pytz==2023.3
 six==1.16.0
+pillow==10.1.0
